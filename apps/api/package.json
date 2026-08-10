@@ -1,0 +1,30 @@
+{
+  "name": "@conversion-file/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fastify API for file conversion",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "echo 'No tests yet'"
+  },
+  "dependencies": {
+    "@conversion-file/shared": "workspace:*",
+    "@fastify/cors": "^8.4.2",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/multipart": "^8.0.0",
+    "@fastify/rate-limit": "^8.1.1",
+    "fastify": "^4.25.0",
+    "pino": "^8.17.0",
+    "pino-pretty": "^10.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.2.0"
+  }
+}
