@@ -16,10 +16,17 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
-    "test": "echo 'No tests yet'"
+    "test": "echo 'No tests yet'",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.17.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "prisma": "^5.17.0",
     "typescript": "^5.2.0"
   }
 }
