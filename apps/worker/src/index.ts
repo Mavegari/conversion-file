@@ -4,13 +4,13 @@ import IORedis from 'ioredis';
 const redis = new IORedis({
   host: process.env.REDIS_HOST || 'localhost',
   port: parseInt(process.env.REDIS_PORT || '6379'),
+  maxRetriesPerRequest: null,
 });
 
 const worker = new Worker(
   'conversions',
   async (job) => {
     console.log(`Processing job ${job.id}: ${job.data.type}`);
-    // Placeholder: handlers irán aquí en Fase 4
     return { success: true };
   },
   { connection: redis }
