@@ -1,6 +1,6 @@
 // Re-exportar el cliente Prisma para que otros packages lo usen
 export { PrismaClient } from '@prisma/client';
-export type { Job } from '@prisma/client';
+export type { Prisma } from '@prisma/client';
 
 // Enums y constantes para tipos de conversión
 export const JOB_TYPES = {
