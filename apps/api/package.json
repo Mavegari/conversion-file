@@ -13,6 +13,8 @@
     "test": "echo 'No tests yet'"
   },
   "dependencies": {
+    "@bull-board/api": "^5.8.0",
+    "@bull-board/fastify": "^5.8.0",
     "@conversion-file/shared": "workspace:*",
     "@fastify/cors": "^8.4.2",
     "@fastify/helmet": "^11.1.1",
