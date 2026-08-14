@@ -35,3 +35,6 @@ Thumbs.db
 # Storage temporal (archivos subidos)
 uploads/
 tmp/
+# File conversion storage
+storage/
+apps/*/storage/
