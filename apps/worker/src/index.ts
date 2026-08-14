@@ -4,13 +4,16 @@ import pino from 'pino';
 import { config } from './config';
 import { registerConverter, processJob } from './converters';
 import { DummyConverter } from './converters/dummy';
+import { ImagesToPdfConverter } from './converters/images-to-pdf';
 
 const logger = pino();
 const prisma = new PrismaClient();
 
 // Registrar conversores
 const dummyConverter = new DummyConverter();
-registerConverter('images-to-pdf', dummyConverter);
+const imagesToPdfConverter = new ImagesToPdfConverter();
+
+registerConverter('images-to-pdf', imagesToPdfConverter);
 registerConverter('csv-to-xlsx', dummyConverter);
 registerConverter('csv-to-json', dummyConverter);
 registerConverter('office-to-pdf', dummyConverter);
