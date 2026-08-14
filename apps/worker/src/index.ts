@@ -29,15 +29,14 @@ async function startWorker() {
     const worker = new Worker(
       'conversions',
       async (job) => {
-        const jobId = job.id!;
-        const { type, inputPaths } = job.data;
+        const { jobId, type, inputPaths } = job.data;
 
         logger.info(`[${jobId}] Processing job: ${type}`);
 
         try {
           // Actualizar status a PROCESSING
           await prisma.job.update({
-            where: { id: jobId },
+            where: { id: jobId }, // ← Usa jobId del data, no job.id
             data: {
               status: JOB_STATUS.PROCESSING,
               progress: 0,
