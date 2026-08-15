@@ -5,17 +5,21 @@ import { config } from './config';
 import { registerConverter, processJob } from './converters';
 import { DummyConverter } from './converters/dummy';
 import { ImagesToPdfConverter } from './converters/images-to-pdf';
+import { CsvToXlsxConverter } from './converters/csv-to-xlsx';
+import { CsvToJsonConverter } from './converters/csv-to-json';
 
 const logger = pino();
 const prisma = new PrismaClient();
 
-// Registrar conversores
+// Registrar convertores
 const dummyConverter = new DummyConverter();
 const imagesToPdfConverter = new ImagesToPdfConverter();
+const csvToXlsxConverter = new CsvToXlsxConverter();
+const csvToJsonConverter = new CsvToJsonConverter();
 
 registerConverter('images-to-pdf', imagesToPdfConverter);
-registerConverter('csv-to-xlsx', dummyConverter);
-registerConverter('csv-to-json', dummyConverter);
+registerConverter('csv-to-xlsx', csvToXlsxConverter);
+registerConverter('csv-to-json', csvToJsonConverter);
 registerConverter('office-to-pdf', dummyConverter);
 registerConverter('pdf-merge', dummyConverter);
 registerConverter('pdf-split', dummyConverter);
@@ -29,14 +33,15 @@ async function startWorker() {
     const worker = new Worker(
       'conversions',
       async (job) => {
-        const { jobId, type, inputPaths } = job.data;
+        const jobId = job.data.jobId as string;
+        const { type, inputPaths } = job.data;
 
         logger.info(`[${jobId}] Processing job: ${type}`);
 
         try {
           // Actualizar status a PROCESSING
           await prisma.job.update({
-            where: { id: jobId }, // ← Usa jobId del data, no job.id
+            where: { id: jobId },
             data: {
               status: JOB_STATUS.PROCESSING,
               progress: 0,
