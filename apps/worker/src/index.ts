@@ -7,6 +7,7 @@ import { DummyConverter } from './converters/dummy';
 import { ImagesToPdfConverter } from './converters/images-to-pdf';
 import { CsvToXlsxConverter } from './converters/csv-to-xlsx';
 import { CsvToJsonConverter } from './converters/csv-to-json';
+import { OfficeToPdfConverter } from './converters/office-to-pdf';
 
 const logger = pino();
 const prisma = new PrismaClient();
@@ -16,6 +17,7 @@ const dummyConverter = new DummyConverter();
 const imagesToPdfConverter = new ImagesToPdfConverter();
 const csvToXlsxConverter = new CsvToXlsxConverter();
 const csvToJsonConverter = new CsvToJsonConverter();
+const officeToPdfConverter = new OfficeToPdfConverter();
 
 registerConverter('images-to-pdf', imagesToPdfConverter);
 registerConverter('csv-to-xlsx', csvToXlsxConverter);
@@ -24,6 +26,7 @@ registerConverter('office-to-pdf', dummyConverter);
 registerConverter('pdf-merge', dummyConverter);
 registerConverter('pdf-split', dummyConverter);
 registerConverter('pdf-compress', dummyConverter);
+registerConverter('office-to-pdf', officeToPdfConverter);
 
 async function startWorker() {
   try {

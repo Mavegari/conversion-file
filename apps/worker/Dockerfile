@@ -5,6 +5,11 @@ WORKDIR /app
 RUN npm install -g pnpm
 RUN apk add --no-cache dumb-init
 
+# Instalar LibreOffice headless
+RUN apk add --no-cache \
+    libreoffice \
+    libreoffice-lang-es
+
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY apps/worker ./apps/worker
 COPY packages/shared ./packages/shared
