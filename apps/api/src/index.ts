@@ -7,6 +7,7 @@ import { config } from './config';
 import { initQueue } from './queue';
 import { jobsRoutes } from './routes/jobs';
 import { setupBullBoard } from './bullboard';
+import { pdfRoutes } from './routes/pdf';
 
 const fastify = Fastify({
   logger: true,
@@ -28,6 +29,12 @@ async function start() {
       max: 100,
       timeWindow: '15 minutes',
     });
+
+    // Registrar rutas
+    await fastify.register(jobsRoutes);
+    await fastify.register(pdfRoutes);
+
+    await fastify.listen({ port: config.api.port, host: config.api.host });
 
     // Inicializar cola
     const queue = initQueue();
