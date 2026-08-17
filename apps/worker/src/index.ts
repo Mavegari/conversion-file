@@ -8,6 +8,9 @@ import { ImagesToPdfConverter } from './converters/images-to-pdf';
 import { CsvToXlsxConverter } from './converters/csv-to-xlsx';
 import { CsvToJsonConverter } from './converters/csv-to-json';
 import { OfficeToPdfConverter } from './converters/office-to-pdf';
+import { PdfMergeConverter } from './converters/pdf-merge';
+import { PdfSplitConverter } from './converters/pdf-split';
+import { PdfCompressConverter } from './converters/pdf-compress';
 
 const logger = pino();
 const prisma = new PrismaClient();
@@ -18,6 +21,9 @@ const imagesToPdfConverter = new ImagesToPdfConverter();
 const csvToXlsxConverter = new CsvToXlsxConverter();
 const csvToJsonConverter = new CsvToJsonConverter();
 const officeToPdfConverter = new OfficeToPdfConverter();
+const pdfMergeConverter = new PdfMergeConverter();
+const pdfSplitConverter = new PdfSplitConverter();
+const pdfCompressConverter = new PdfCompressConverter();
 
 registerConverter('images-to-pdf', imagesToPdfConverter);
 registerConverter('csv-to-xlsx', csvToXlsxConverter);
@@ -27,6 +33,9 @@ registerConverter('pdf-merge', dummyConverter);
 registerConverter('pdf-split', dummyConverter);
 registerConverter('pdf-compress', dummyConverter);
 registerConverter('office-to-pdf', officeToPdfConverter);
+registerConverter('pdf-merge', pdfMergeConverter);
+registerConverter('pdf-split', pdfSplitConverter);
+registerConverter('pdf-compress', pdfCompressConverter);
 
 async function startWorker() {
   try {

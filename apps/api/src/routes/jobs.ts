@@ -13,12 +13,6 @@ export async function jobsRoutes(fastify: FastifyInstance) {
   // POST /api/jobs - Crear un nuevo job
   fastify.post('/api/jobs', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const data = await request.file();
-
-      if (!data) {
-        throw new BadRequest('No file provided', 'NO_FILE');
-      }
-
       const type = (request.query as any).type as string;
       if (!type) {
         throw new BadRequest('Missing query parameter: type', 'MISSING_TYPE');
@@ -26,17 +20,29 @@ export async function jobsRoutes(fastify: FastifyInstance) {
 
       validateJobType(type);
 
-      const buffer = await data.toBuffer();
+      // Capturar múltiples archivos
+      const files = request.files();
+      const uploadedFiles: Array<{ buffer: Buffer; filename: string; mimetype: string }> = [];
 
-      // Validar tamaño
-      validateFileSize(buffer.length, config.upload.maxFileSize);
+      for await (const file of files) {
+        const buffer = await file.toBuffer();
+        validateFileSize(buffer.length, config.upload.maxFileSize);
 
-      // Detectar mimetype real con file-type
-      const fileTypeResult = await fileTypeFromBuffer(buffer);
-      const mimeType = fileTypeResult?.mime || data.mimetype;
+        const fileTypeResult = await fileTypeFromBuffer(buffer);
+        const mimeType = fileTypeResult?.mime || file.mimetype;
 
-      // Validar mimetype
-      validateMimetype(type, mimeType);
+        validateMimetype(type, mimeType);
+
+        uploadedFiles.push({
+          buffer,
+          filename: file.filename,
+          mimetype: mimeType,
+        });
+      }
+
+      if (uploadedFiles.length === 0) {
+        throw new BadRequest('No files provided', 'NO_FILE');
+      }
 
       // Crear registro en BD
       const job = await prisma.job.create({
@@ -44,20 +50,24 @@ export async function jobsRoutes(fastify: FastifyInstance) {
           type,
           status: 'QUEUED',
           inputPaths: [],
-          originalName: data.filename,
-          mimeType,
+          originalName: uploadedFiles[0]?.filename || 'unknown',
+          mimeType: uploadedFiles[0]?.mimetype || 'application/octet-stream',
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         },
       });
 
-      // Guardar archivo en storage
-      const inputPath = await storageService.saveFile(buffer, data.filename, job.id);
+      // Guardar todos los archivos en storage
+      const inputPaths: string[] = [];
+      for (const file of uploadedFiles) {
+        const inputPath = await storageService.saveFile(file.buffer, file.filename, job.id);
+        inputPaths.push(inputPath);
+      }
 
       // Actualizar inputPaths
       await prisma.job.update({
         where: { id: job.id },
         data: {
-          inputPaths: [inputPath],
+          inputPaths,
         },
       });
 
@@ -65,9 +75,9 @@ export async function jobsRoutes(fastify: FastifyInstance) {
       await enqueueJob({
         jobId: job.id,
         type,
-        inputPaths: [inputPath],
-        originalName: data.filename,
-        mimeType,
+        inputPaths,
+        originalName: uploadedFiles[0]?.filename || 'unknown',
+        mimeType: uploadedFiles[0]?.mimetype || 'application/octet-stream',
       });
 
       reply.status(201).send({
